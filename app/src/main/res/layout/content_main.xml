@@ -36,16 +36,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:text="cdsadadlick"/>
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:text="asddasda"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:text="asdadarewe"/>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 

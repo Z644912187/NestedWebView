@@ -17,15 +17,23 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sjtu.charles.adapter.RecyclerViewLoadMoreAdapter;
 import com.sjtu.charles.nestedwebview.R;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerViewLoadMoreAdapter.OnLoadMoreListener, RecyclerViewLoadMoreAdapter.OnRecyclerViewItemClickListener {
 
     private WebView webView;
     private RecyclerView recyclerView;
+
+    private TestAdapter mAdapter;
+
+    private List<String> mDatas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +42,21 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initData();
+
         initWebView();
 
         initRecyclerView();
 
+    }
+
+    private void initData() {
+        if (mDatas == null) {
+            mDatas = new ArrayList<>();
+        }
+        for (int i = 1; i < 20; i++) {
+            mDatas.add("this is test data " + (mDatas.size() + 1));
+        }
     }
 
     @Override
@@ -58,7 +77,23 @@ public class MainActivity extends AppCompatActivity {
     private void initRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new MyAdapter());
+
+        mAdapter = new TestAdapter(mDatas);
+        mAdapter.setOnLoadMoreListener(this);
+        mAdapter.setOnItemClickListener(this);
+        recyclerView.setAdapter(mAdapter);
+        mAdapter.setRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void OnLoadMore() {
+        recyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initData();
+                mAdapter.notifyDataSetChanged();
+            }
+        }, 3000);
     }
 
     private void initWebView() {
@@ -89,27 +124,9 @@ public class MainActivity extends AppCompatActivity {
         webView.loadUrl("http://www.jianshu.com/p/a00f5f2ab2f5");
     }
 
-    private class MyAdapter extends RecyclerView.Adapter {
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            TextView itemView = new TextView(parent.getContext());
-            itemView.setTextSize(20);
-            return new RecyclerView.ViewHolder(itemView) {
-                @Override
-                public String toString() {
-                    return super.toString();
-                }
-            };
-        }
 
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView) holder.itemView).setText(position + ". this is getDirection simple item");
-        }
-
-        @Override
-        public int getItemCount() {
-            return 100;
-        }
+    @Override
+    public void onItemClick(View view, int position) {
+        Toast.makeText(this, "click position " + position, Toast.LENGTH_SHORT).show();
     }
 }
